@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cassy's RSVP Submissions</title>
+  <title>Cassy's Submissions</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #fef3f3;
+      background: #fff0f6;
       padding: 2em;
     }
     h1 {
       color: #d81b60;
+      text-align: center;
     }
     table {
       width: 100%;
@@ -29,7 +30,7 @@
   </style>
 </head>
 <body>
-  <h1>🎀 Cassy's RSVP Submissions</h1>
+  <h1>🎀 Cassy's RSVP Submissions 🎀</h1>
   <table id="submissions-table">
     <thead>
       <tr>
@@ -45,8 +46,10 @@
     <tbody></tbody>
   </table>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBPXAlsYjQV61pEuv_ZKJjKxURgXEGmIx8",
@@ -63,8 +66,7 @@
 
     db.ref("submissions").on("value", (snapshot) => {
       const table = document.querySelector("tbody");
-      table.innerHTML = ""; // clear previous
-
+      table.innerHTML = "";
       snapshot.forEach((child) => {
         const data = child.val();
         const row = `

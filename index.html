@@ -173,4 +173,41 @@
     }
   </script>
 </body>
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  // Your Firebase config here
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPXAlsYjQV61pEuv_ZKJjKxURgXEGmIx8",
+    authDomain: "cassy-debut.firebaseapp.com",
+    projectId: "cassy-debut",
+    storageBucket: "cassy-debut.firebasestorage.app,
+    messagingSenderId: "215238742278",
+    appId: "1:215238742278:web:b1972fec502b8a1e938e87"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  async function submitForm() {
+    const name = document.getElementById('name').value;
+    const facebook = document.getElementById('facebook').value;
+    const contact = document.getElementById('contact').value;
+    const relationship = document.getElementById('relationship').value;
+    const tinapay = document.getElementById('tinapay').value;
+    const code = generateRandomCode();
+
+    const payload = { name, facebook, contact, relationship, tinapay, code, timestamp: new Date().toISOString() };
+
+    // Push to Firebase
+    await db.ref("submissions").push(payload);
+    console.log("Saved to Firebase:", payload);
+
+    generateTicket(name, code);
+  }
+</script>
+
 </html>

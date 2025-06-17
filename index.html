@@ -9,81 +9,40 @@
       background: linear-gradient(to right, #b0e6e9, #55e2e9);
       color: #333;
       text-align: center;
-      margin: 0;
       padding: 2em;
     }
-
-    h1 {
-      font-size: 2em;
-      margin-bottom: 1em;
-    }
-
+    h1 { font-size: 2em; margin-bottom: 1em; }
     button {
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #0496c7;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
+      padding: 12px 24px; font-size: 16px;
+      background-color: #0496c7; border: none; color: white;
+      border-radius: 8px; cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
-    button:hover {
-      background-color: #006ca5;
-    }
-
+    button:hover { background-color: #006ca5; }
     #rsvp-form {
-      margin-top: 2em;
-      padding: 2em;
-      background: white;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      margin-top: 2em; padding: 2em; background: white;
+      border-radius: 12px; width: 90%; max-width: 500px;
+      margin-left: auto; margin-right: auto;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-
-    .form-group {
-      margin-bottom: 1em;
-    }
-
+    .form-group { margin-bottom: 1em; }
     input, textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      width: 100%; padding: 10px;
+      border-radius: 6px; border: 1px solid #ccc;
       font-size: 14px;
-      box-sizing: border-box;
     }
-
     canvas {
-      margin-top: 2em;
-      border: 2px dashed #ec407a;
+      margin-top: 2em; border: 2px dashed #ec407a;
       border-radius: 12px;
     }
-
     a {
-      display: block;
-      margin-top: 1em;
-      color: #fff;
-      background-color: #8e24aa;
-      padding: 10px 20px;
-      border-radius: 6px;
-      text-decoration: none;
-      width: max-content;
-      margin-left: auto;
-      margin-right: auto;
+      display: block; margin-top: 1em; color: #fff;
+      background-color: #8e24aa; padding: 10px 20px;
+      border-radius: 6px; text-decoration: none;
+      width: max-content; margin-left: auto; margin-right: auto;
     }
-
-    a:hover {
-      background-color: #6a1b9a;
-    }
-
-    .hidden {
-      display: none;
-    }
+    a:hover { background-color: #6a1b9a; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -91,27 +50,33 @@
   <button onclick="showForm()">Accept Invitation</button>
 
   <div id="rsvp-form" class="hidden">
-    <div class="form-group">
-      <input type="text" id="name" placeholder="Your Full Name" required>
-    </div>
-    <div class="form-group">
-      <input type="text" id="facebook" placeholder="Facebook Name" required>
-    </div>
-    <div class="form-group">
-      <input type="text" id="contact" placeholder="Contact Number" required>
-    </div>
-    <div class="form-group">
-      <textarea id="relationship" placeholder="What's your relationship with Cassy?" required></textarea>
-    </div>
-    <div class="form-group">
-      <textarea id="tinapay" placeholder="Ga damgo kaw man it tinapay? 🤔" required></textarea>
-    </div>
+    <div class="form-group"><input type="text" id="name" placeholder="Your Full Name" required></div>
+    <div class="form-group"><input type="text" id="facebook" placeholder="Facebook Name" required></div>
+    <div class="form-group"><input type="text" id="contact" placeholder="Contact Number" required></div>
+    <div class="form-group"><textarea id="relationship" placeholder="What's your relationship with Cassy?" required></textarea></div>
+    <div class="form-group"><textarea id="tinapay" placeholder="Ga damgo kaw man it tinapay? 🤔" required></textarea></div>
     <button onclick="submitForm()">Submit</button>
   </div>
 
   <canvas id="ticket" width="500" height="300" class="hidden"></canvas>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPXAlsYjQV61pEuv_ZKJjKxURgXEGmIx8",
+      authDomain: "cassy-debut.firebaseapp.com",
+      databaseURL: "https://cassy-debut-default-rtdb.firebaseio.com",
+      projectId: "cassy-debut",
+      storageBucket: "cassy-debut.appspot.com",
+      messagingSenderId: "215238742278",
+      appId: "1:215238742278:web:b1972fec502b8a1e938e87"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     function showForm() {
       document.getElementById('rsvp-form').classList.remove('hidden');
     }
@@ -129,22 +94,11 @@
       const code = generateRandomCode();
 
       const payload = {
-        name,
-        facebook,
-        contact,
-        relationship,
-        tinapay,
-        code
+        name, facebook, contact, relationship, tinapay, code,
+        timestamp: new Date().toISOString()
       };
 
-      const url = 'https://script.google.com/macros/s/AKfycby3tGVEu4fqHAn33O6ZdP_Zb_8BBYgsdJTW5dH4ukrYG2pV8GuxB2_G8KM05CeSumkH/exec'; 
-
-      await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: { 'Content-Type': 'application/json' }
-      });
-
+      await db.ref("submissions").push(payload);
       generateTicket(name, code);
     }
 
@@ -173,41 +127,4 @@
     }
   </script>
 </body>
-  <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<script>
-  // Your Firebase config here
-  const firebaseConfig = {
-    apiKey: "AIzaSyBPXAlsYjQV61pEuv_ZKJjKxURgXEGmIx8",
-    authDomain: "cassy-debut.firebaseapp.com",
-    projectId: "cassy-debut",
-    storageBucket: "cassy-debut.firebasestorage.app,
-    messagingSenderId: "215238742278",
-    appId: "1:215238742278:web:b1972fec502b8a1e938e87"
-  };
-
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  async function submitForm() {
-    const name = document.getElementById('name').value;
-    const facebook = document.getElementById('facebook').value;
-    const contact = document.getElementById('contact').value;
-    const relationship = document.getElementById('relationship').value;
-    const tinapay = document.getElementById('tinapay').value;
-    const code = generateRandomCode();
-
-    const payload = { name, facebook, contact, relationship, tinapay, code, timestamp: new Date().toISOString() };
-
-    // Push to Firebase
-    await db.ref("submissions").push(payload);
-    console.log("Saved to Firebase:", payload);
-
-    generateTicket(name, code);
-  }
-</script>
-
 </html>

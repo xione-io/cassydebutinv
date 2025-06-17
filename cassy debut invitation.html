@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cassy's Debut Invite</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #b0e6e9, #55e2e9);
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 2em;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #0496c7;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #006ca5;
+    }
+
+    #rsvp-form {
+      margin-top: 2em;
+      padding: 2em;
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1em;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    canvas {
+      margin-top: 2em;
+      border: 2px dashed #ec407a;
+      border-radius: 12px;
+    }
+
+    a {
+      display: block;
+      margin-top: 1em;
+      color: #fff;
+      background-color: #8e24aa;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      width: max-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    a:hover {
+      background-color: #6a1b9a;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎀 You’ve Been Invited to Cassy’s Debut! 🎀</h1>
+  <button onclick="showForm()">Accept Invitation</button>
+
+  <div id="rsvp-form" class="hidden">
+    <div class="form-group">
+      <input type="text" id="name" placeholder="Your Full Name" required>
+    </div>
+    <div class="form-group">
+      <input type="text" id="facebook" placeholder="Facebook Name" required>
+    </div>
+    <div class="form-group">
+      <input type="text" id="contact" placeholder="Contact Number" required>
+    </div>
+    <div class="form-group">
+      <textarea id="relationship" placeholder="What's your relationship with Cassy?" required></textarea>
+    </div>
+    <div class="form-group">
+      <textarea id="tinapay" placeholder="Ga damgo kaw man it tinapay? 🤔" required></textarea>
+    </div>
+    <button onclick="submitForm()">Submit</button>
+  </div>
+
+  <canvas id="ticket" width="500" height="300" class="hidden"></canvas>
+
+  <script>
+    function showForm() {
+      document.getElementById('rsvp-form').classList.remove('hidden');
+    }
+
+    function generateRandomCode(length = 6) {
+      return Math.random().toString(36).substr(2, length).toUpperCase();
+    }
+
+    async function submitForm() {
+      const name = document.getElementById('name').value;
+      const facebook = document.getElementById('facebook').value;
+      const contact = document.getElementById('contact').value;
+      const relationship = document.getElementById('relationship').value;
+      const tinapay = document.getElementById('tinapay').value;
+      const code = generateRandomCode();
+
+      const payload = {
+        name,
+        facebook,
+        contact,
+        relationship,
+        tinapay,
+        code
+      };
+
+      const url = 'https://script.google.com/macros/s/AKfycbxMqDkOwKQjXsZOZ-umDP30vMfTCBKLHDQSKF5q9Syb1vtu-xXfpurU0AMYZnULbVypYQ/exec'; 
+
+      await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      generateTicket(name, code);
+    }
+
+    function generateTicket(name, code) {
+      const canvas = document.getElementById('ticket');
+      const ctx = canvas.getContext('2d');
+      canvas.classList.remove('hidden');
+
+      ctx.fillStyle = '#fff3e0';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#d81b60';
+      ctx.font = '22px Georgia';
+      ctx.fillText("🎟️ Cassy's Debut Entrance Ticket 🎟️", 50, 60);
+
+      ctx.fillStyle = '#000';
+      ctx.font = '18px sans-serif';
+      ctx.fillText(`Name: ${name}`, 50, 130);
+      ctx.fillText(`Your Code: ${code}`, 50, 170);
+
+      const link = document.createElement('a');
+      link.download = `Cassy_Ticket_${name}.png`;
+      link.href = canvas.toDataURL();
+      link.textContent = '🎫 Download Your Ticket';
+      document.body.appendChild(link);
+    }
+  </script>
+</body>
+</html>

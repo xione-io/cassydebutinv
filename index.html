@@ -10,44 +10,107 @@
       color: #333;
       text-align: center;
       padding: 2em;
+      margin: 0;
     }
-    h1 { font-size: 2em; margin-bottom: 1em; }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+
     button {
-      padding: 12px 24px; font-size: 16px;
-      background-color: #0496c7; border: none; color: white;
-      border-radius: 8px; cursor: pointer;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #0496c7;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    button:hover { background-color: #006ca5; }
+
+    button:hover {
+      background-color: #006ca5;
+    }
+
     #rsvp-form {
-      margin-top: 2em; padding: 2em; background: white;
-      border-radius: 12px; width: 90%; max-width: 500px;
-      margin-left: auto; margin-right: auto;
+      margin-top: 2em;
+      padding: 2em;
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    .form-group { margin-bottom: 1em; }
+
+    .form-group {
+      margin-bottom: 1em;
+    }
+
     input, textarea {
-      width: 100%; padding: 10px;
-      border-radius: 6px; border: 1px solid #ccc;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
       font-size: 14px;
+      box-sizing: border-box;
     }
-    canvas {
-      margin-top: 2em; border: 2px dashed #ec407a;
+
+    .hidden {
+      display: none;
+    }
+
+    /* Modal Background */
+    #modal-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(8px);
+      background-color: rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    /* Ticket Modal */
+    #ticket-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 1em;
       border-radius: 12px;
+      z-index: 1001;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
     }
-    a {
-      display: block; margin-top: 1em; color: #fff;
-      background-color: #8e24aa; padding: 10px 20px;
-      border-radius: 6px; text-decoration: none;
-      width: max-content; margin-left: auto; margin-right: auto;
+
+    #ticket-modal canvas {
+      border: 2px dashed #ec407a;
+      border-radius: 12px;
+      margin-bottom: 1em;
     }
-    a:hover { background-color: #6a1b9a; }
-    .hidden { display: none; }
+
+    #download-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #8e24aa;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    #download-link:hover {
+      background-color: #6a1b9a;
+    }
   </style>
 </head>
 <body>
   <h1>🎀 You’ve Been Invited to Cassy’s Debut! 🎀</h1>
-  <button onclick="showForm()">Accept Invitation</button>
+  <button id="accept-btn" onclick="showForm()">Accept Invitation</button>
 
   <div id="rsvp-form" class="hidden">
     <div class="form-group"><input type="text" id="name" placeholder="Your Full Name" required></div>
@@ -58,8 +121,14 @@
     <button onclick="submitForm()">Submit</button>
   </div>
 
-  <canvas id="ticket" width="500" height="300" class="hidden"></canvas>
+  <!-- Modal and Blurred Background -->
+  <div id="modal-bg" class="hidden"></div>
+  <div id="ticket-modal" class="hidden">
+    <canvas id="ticket" width="500" height="300"></canvas>
+    <a id="download-link">🎫 Download Your Ticket</a>
+  </div>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -78,6 +147,7 @@
     const db = firebase.database();
 
     function showForm() {
+      document.getElementById('accept-btn').remove(); // Remove the button
       document.getElementById('rsvp-form').classList.remove('hidden');
     }
 
@@ -105,8 +175,15 @@
     function generateTicket(name, code) {
       const canvas = document.getElementById('ticket');
       const ctx = canvas.getContext('2d');
-      canvas.classList.remove('hidden');
+      const modal = document.getElementById('ticket-modal');
+      const modalBg = document.getElementById('modal-bg');
+      const downloadLink = document.getElementById('download-link');
 
+      // Show the modal
+      modal.classList.remove('hidden');
+      modalBg.classList.remove('hidden');
+
+      // Draw the ticket
       ctx.fillStyle = '#fff3e0';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -119,11 +196,10 @@
       ctx.fillText(`Name: ${name}`, 50, 130);
       ctx.fillText(`Your Code: ${code}`, 50, 170);
 
-      const link = document.createElement('a');
-      link.download = `Cassy_Ticket_${name}.png`;
-      link.href = canvas.toDataURL();
-      link.textContent = '🎫 Download Your Ticket';
-      document.body.appendChild(link);
+      // Setup download
+      const dataUrl = canvas.toDataURL();
+      downloadLink.href = dataUrl;
+      downloadLink.download = `Cassy_Ticket_${name}.png`;
     }
   </script>
 </body>

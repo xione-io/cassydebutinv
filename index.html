@@ -1,27 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Cassy's Debut Invite</title>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #b0e6e9, #55e2e9);
-      color: #333;
-      text-align: center;
-      padding: 2em;
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      overflow-x: hidden;
+      background: linear-gradient(to right, #fbc2eb, #a6c1ee); /* static background */
+      /* Removed background transition and hue shifting */
     }
 
-    h1 {
-      font-size: 2em;
+    /* Welcome screen */
+    #welcome-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      font-size: 1.5rem;
+      text-align: center;
+      transition: transform 0.8s ease, opacity 0.8s ease;
+    }
+
+    #welcome-screen h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    #welcome-screen p {
+      font-size: 1rem;
+      color: #555;
+      animation: pulseColor 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulseColor {
+      0% { color: #555; }
+      50% { color: #868686; }
+      100% { color: #555; }
+    }
+
+    #welcome-screen.slide-up {
+      transform: translateY(-100vh);
+      opacity: 0;
+    }
+
+    /* RSVP form */
+    #rsvp-form {
+      margin-top: 5em;
+      padding: 2em;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
+      color: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    #rsvp-form.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .form-group {
       margin-bottom: 1em;
     }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.1);
+      border: 1.5px solid #ccc;
+      color: white;
+      font-size: 14px;
+      font-family: 'Tahoma';
+      box-sizing: border-box;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.1);
+      border: 1.5px solid #ccc;
+      color: white;
+      font-size: 14px;
+      font-family: 'Tahoma';
+      height: 90px;       /* Tripled height */
+      resize: none;        /* Disable user resizing */
+      box-sizing: border-box;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: white;
+      opacity: 0.85;
+    }
+
 
     button {
       padding: 12px 24px;
       font-size: 16px;
-      background-color: #0496c7;
+      background-color: #8caeeb;
       border: none;
       color: white;
       border-radius: 8px;
@@ -30,87 +126,64 @@
     }
 
     button:hover {
-      background-color: #006ca5;
+      background-color: #3eace7;
     }
 
-    #rsvp-form {
-      margin-top: 2em;
-      padding: 2em;
-      background: white;
+    /* Ticket popup */
+    #ticket-box {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    #ticket {
+      border: 2px dashed #ec407a;
       border-radius: 12px;
-      width: 90%;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 100%;
+      height: auto;
     }
 
-    .form-group {
-      margin-bottom: 1em;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
+    #ticket-box a {
+      margin-top: 30px;
+      color: #fff;
+      background-color: #8e24aa;
+      padding: 10px 20px;
       border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      box-sizing: border-box;
+      text-decoration: none;
+    }
+
+    #ticket-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    #ticket-close:hover {
+      color: #ffcccc;
     }
 
     .hidden {
-      display: none;
-    }
-
-    /* Modal Background */
-    #modal-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backdrop-filter: blur(8px);
-      background-color: rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-    }
-
-    /* Ticket Modal */
-    #ticket-modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 1em;
-      border-radius: 12px;
-      z-index: 1001;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      text-align: center;
-    }
-
-    #ticket-modal canvas {
-      border: 2px dashed #ec407a;
-      border-radius: 12px;
-      margin-bottom: 1em;
-    }
-
-    #download-link {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #8e24aa;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-    }
-
-    #download-link:hover {
-      background-color: #6a1b9a;
+      display: none !important;
     }
   </style>
 </head>
 <body>
-  <h1>🎀 You’ve Been Invited to Cassy’s Debut! 🎀</h1>
-  <button id="accept-btn" onclick="showForm()">Accept Invitation</button>
+  <div id="welcome-screen">
+    <h1>Cassy invited you to her debut! 💌</h1>
+    <p>- Click anywhere to accept the invitation -</p>
+  </div>
 
   <div id="rsvp-form" class="hidden">
     <div class="form-group"><input type="text" id="name" placeholder="Your Full Name" required></div>
@@ -121,16 +194,22 @@
     <button onclick="submitForm()">Submit</button>
   </div>
 
-  <!-- Modal and Blurred Background -->
-  <div id="modal-bg" class="hidden"></div>
-  <div id="ticket-modal" class="hidden">
+  <!-- Ticket Popup -->
+  <div id="ticket-box" class="hidden">
+    <button id="ticket-close" onclick="closeTicket()">✖</button>
     <canvas id="ticket" width="500" height="300"></canvas>
-    <a id="download-link">🎫 Download Your Ticket</a>
+    <p style="color: white; margin-top: 30px;">
+      If you can’t download the picture, copy the link above and paste it in your browser.
+    </p>
+    <a id="download-link" download>🎫 Download Your Ticket</a>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
 
   <script>
     const firebaseConfig = {
@@ -145,11 +224,6 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    function showForm() {
-      document.getElementById('accept-btn').remove(); // Remove the button
-      document.getElementById('rsvp-form').classList.remove('hidden');
-    }
 
     function generateRandomCode(length = 6) {
       return Math.random().toString(36).substr(2, length).toUpperCase();
@@ -175,15 +249,10 @@
     function generateTicket(name, code) {
       const canvas = document.getElementById('ticket');
       const ctx = canvas.getContext('2d');
-      const modal = document.getElementById('ticket-modal');
-      const modalBg = document.getElementById('modal-bg');
+      const ticketBox = document.getElementById('ticket-box');
       const downloadLink = document.getElementById('download-link');
 
-      // Show the modal
-      modal.classList.remove('hidden');
-      modalBg.classList.remove('hidden');
-
-      // Draw the ticket
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#fff3e0';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -196,11 +265,68 @@
       ctx.fillText(`Name: ${name}`, 50, 130);
       ctx.fillText(`Your Code: ${code}`, 50, 170);
 
-      // Setup download
-      const dataUrl = canvas.toDataURL();
-      downloadLink.href = dataUrl;
+      ticketBox.classList.remove('hidden');
+      downloadLink.href = canvas.toDataURL();
       downloadLink.download = `Cassy_Ticket_${name}.png`;
     }
+
+    function closeTicket() {
+      document.getElementById('ticket-box').classList.add('hidden');
+    }
+
+    // Welcome screen interaction
+    document.addEventListener("DOMContentLoaded", () => {
+      const welcomeScreen = document.getElementById('welcome-screen');
+      const form = document.getElementById('rsvp-form');
+
+      document.body.addEventListener('click', function handleFirstClick() {
+        welcomeScreen.classList.add('slide-up');
+        // Removed background color class toggling here
+
+        setTimeout(() => {
+          welcomeScreen.remove();
+          form.classList.remove('hidden');
+          setTimeout(() => {
+            form.classList.add('show');
+          }, 10);
+        }, 800);
+
+        document.body.removeEventListener('click', handleFirstClick);
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const form = document.getElementById('rsvp-form');
+
+    const handleFirstClick = () => {
+      // Trigger confetti once on accept
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        startVelocity: 60,
+        origin: { y: 0.6 }
+      });
+
+      welcomeScreen.classList.add('slide-up');
+
+      setTimeout(() => {
+        welcomeScreen.remove();
+        form.classList.remove('hidden');
+
+        // Wait a bit to trigger CSS transition
+        setTimeout(() => {
+          form.classList.add('show');
+        }, 10);
+      }, 800);
+
+      // Detach click listener
+      document.body.removeEventListener('click', handleFirstClick);
+    };
+
+    document.body.addEventListener('click', handleFirstClick);
+  });
+
   </script>
 </body>
 </html>

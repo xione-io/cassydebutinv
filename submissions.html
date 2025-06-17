@@ -2,51 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cassy's Submissions</title>
+  <title>Cassy's RSVP Submissions (Private)</title>
   <style>
     body {
       font-family: sans-serif;
       background: #fff0f6;
       padding: 2em;
-    }
-    h1 {
-      color: #d81b60;
       text-align: center;
     }
+
+    h1 {
+      color: #d81b60;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       background: white;
       margin-top: 20px;
+      display: none;
     }
+
     th, td {
       padding: 10px;
       border: 1px solid #ccc;
       text-align: left;
     }
+
     th {
       background: #fce4ec;
+    }
+
+    #login-box {
+      max-width: 400px;
+      margin: 3em auto;
+      background: #ffffffcc;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #d81b60;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #b0003a;
+    }
+
+    #logout-btn {
+      margin-top: 1em;
+      background-color: #555;
+    }
+
+    #error {
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>🎀 Cassy's RSVP Submissions 🎀</h1>
-  <table id="submissions-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Facebook</th>
-        <th>Contact</th>
-        <th>Relationship</th>
-        <th>Tinapay Answer</th>
-        <th>Code</th>
-        <th>Time</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <h1>🔒 Cassy's RSVP Submissions</h1>
 
-  <!-- Firebase SDK -->
+  <div id="login-box">
+    <h3>Please log in to view submissions</h3>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Log In</button>
+    <p id="error"></p>
+  </div>
+
+  <div id="data-section" style="display: none;">
+    <button id="logout-btn" onclick="logout()">🚪 Logout</button>
+    <table id="submissions-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Facebook</th>
+          <th>Contact</th>
+          <th>Relationship</th>
+          <th>Tinapay Answer</th>
+          <th>Code</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -64,25 +123,57 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    db.ref("submissions").on("value", (snapshot) => {
-      const table = document.querySelector("tbody");
-      table.innerHTML = "";
-      snapshot.forEach((child) => {
-        const data = child.val();
-        const row = `
-          <tr>
-            <td>${data.name}</td>
-            <td>${data.facebook}</td>
-            <td>${data.contact}</td>
-            <td>${data.relationship}</td>
-            <td>${data.tinapay}</td>
-            <td>${data.code}</td>
-            <td>${new Date(data.timestamp).toLocaleString()}</td>
-          </tr>
-        `;
-        table.innerHTML += row;
+    const users = {
+      cassikay: "cassikay123",
+      robert: "solatlunabygeiko_2007"
+    };
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const errorBox = document.getElementById("error");
+
+      if (users[username] && users[username] === password) {
+        document.getElementById("login-box").style.display = "none";
+        document.getElementById("data-section").style.display = "block";
+        document.getElementById("submissions-table").style.display = "table";
+        loadSubmissions();
+      } else {
+        errorBox.textContent = "❌ Access Denied. Invalid login.";
+      }
+    }
+
+    function logout() {
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("error").textContent = "";
+
+      document.getElementById("data-section").style.display = "none";
+      document.getElementById("submissions-table").style.display = "none";
+      document.getElementById("login-box").style.display = "block";
+    }
+
+    function loadSubmissions() {
+      db.ref("submissions").on("value", (snapshot) => {
+        const table = document.querySelector("tbody");
+        table.innerHTML = "";
+        snapshot.forEach((child) => {
+          const data = child.val();
+          const row = `
+            <tr>
+              <td>${data.name}</td>
+              <td>${data.facebook}</td>
+              <td>${data.contact}</td>
+              <td>${data.relationship}</td>
+              <td>${data.tinapay}</td>
+              <td>${data.code}</td>
+              <td>${new Date(data.timestamp).toLocaleString()}</td>
+            </tr>
+          `;
+          table.innerHTML += row;
+        });
       });
-    });
+    }
   </script>
 </body>
 </html>

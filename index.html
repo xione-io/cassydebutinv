@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
   <title>Cassy's Debut Invite</title>
   <style>
-    html, body {
+    * {
+      box-sizing: border-box;
+    }
+
+   html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
       overflow-x: hidden;
-      background: linear-gradient(to right, #fbc2eb, #a6c1ee); /* static background */
-      /* Removed background transition and hue shifting */
+      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      font-size: 16px;
     }
 
-    /* Welcome screen */
     #welcome-screen {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      width: 100%; height: 100vh;
       background: linear-gradient(to right, #fbc2eb, #a6c1ee);
       color: #333;
       display: flex;
@@ -27,13 +33,13 @@
       align-items: center;
       justify-content: center;
       z-index: 99999;
-      font-size: 1.5rem;
       text-align: center;
+      padding: 20px;
       transition: transform 0.8s ease, opacity 0.8s ease;
     }
 
     #welcome-screen h1 {
-      font-size: 2.5rem;
+      font-size: 2rem;
       margin-bottom: 1rem;
     }
 
@@ -44,9 +50,8 @@
     }
 
     @keyframes pulseColor {
-      0% { color: #555; }
+      0%, 100% { color: #555; }
       50% { color: #868686; }
-      100% { color: #555; }
     }
 
     #welcome-screen.slide-up {
@@ -54,15 +59,12 @@
       opacity: 0;
     }
 
-    /* RSVP form */
     #rsvp-form {
-      margin-top: 5em;
-      padding: 2em;
+      margin: 3em auto;
+      padding: 1.5em;
       border-radius: 12px;
       width: 90%;
       max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(8px);
       color: white;
@@ -79,61 +81,55 @@
 
     .form-group {
       margin-bottom: 1em;
+      text-align: left;
     }
 
-    input {
+    input, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border-radius: 6px;
       background: rgba(0, 0, 0, 0.1);
       border: 1.5px solid #ccc;
       color: white;
-      font-size: 14px;
-      font-family: 'Tahoma';
+      font-size: 0.75rem;
       box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      background: rgba(0, 0, 0, 0.1);
-      border: 1.5px solid #ccc;
-      color: white;
-      font-size: 14px;
-      font-family: 'Tahoma';
-      height: 90px;       /* Tripled height */
-      resize: none;        /* Disable user resizing */
-      box-sizing: border-box;
+      height: 100px;
+      resize: none;
     }
 
     input::placeholder,
     textarea::placeholder {
       color: white;
-      opacity: 0.85;
+      opacity: 0.80;
+      font-style: italic;
     }
 
-
     button {
-      padding: 12px 24px;
-      font-size: 16px;
+      width: 20%;
+      padding: 14px;
+      font-size: 1rem;
       background-color: #8caeeb;
       border: none;
       color: white;
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      margin-top: 1em;
     }
 
     button:hover {
       background-color: #3eace7;
     }
 
-    /* Ticket popup */
     #ticket-box {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      width: 100%; height: 100vh;
+      overflow: hidden;
       background: rgba(0,0,0,0.5);
       backdrop-filter: blur(5px);
       display: flex;
@@ -141,22 +137,39 @@
       justify-content: center;
       flex-direction: column;
       z-index: 9999;
+      padding: 1rem;
     }
 
     #ticket {
-      border: 2px dashed #ec407a;
-      border-radius: 12px;
-      max-width: 100%;
-      height: auto;
+      border: none;
+      border-radius: 0;
+      background: #fff3f7;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      width: 600px;
+      max-width: 600px;
+      aspect-ratio: 600 / 220;
+      height: 250px;
+      display: block;
     }
 
     #ticket-box a {
-      margin-top: 30px;
+      margin-top: 20px;
       color: #fff;
-      background-color: #8e24aa;
+      background-color: #fca7e4;
       padding: 10px 20px;
       border-radius: 6px;
       text-decoration: none;
+    }
+
+    #ticket-content {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    #ticket-content.show {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     #ticket-close {
@@ -168,6 +181,7 @@
       border: none;
       color: white;
       cursor: pointer;
+      z-index: 10;
     }
 
     #ticket-close:hover {
@@ -176,6 +190,55 @@
 
     .hidden {
       display: none !important;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    /* 📱 Mobile Specific Styles */
+    @media (max-width: 600px) {
+
+      #ticket-close {
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+      }
+
+     #ticket {
+        width: 90vw;
+        height: auto;
+        aspect-ratio: 600 / 250;
+      }
+
+        html, body {
+        font-size: 10px;
+        text-align: center;
+      }
+
+      #welcome-screen h1 {
+        font-size: 1.8rem;
+      }
+
+      #welcome-screen p {
+        font-size: 1rem;
+      }
+
+      button {
+        width: 35%;
+        font-size: 1.1rem;
+      }
+
+      input, textarea {
+        font-size: 1rem;
+      }
+
+      label {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
@@ -186,30 +249,56 @@
   </div>
 
   <div id="rsvp-form" class="hidden">
-    <div class="form-group"><input type="text" id="name" placeholder="Your Full Name" required></div>
-    <div class="form-group"><input type="text" id="facebook" placeholder="Facebook Name" required></div>
-    <div class="form-group"><input type="text" id="contact" placeholder="Contact Number" required></div>
-    <div class="form-group"><textarea id="relationship" placeholder="What's your relationship with Cassy?" required></textarea></div>
-    <div class="form-group"><textarea id="tinapay" placeholder="Ga damgo kaw man it tinapay? 🤔" required></textarea></div>
-    <button onclick="submitForm()">Submit</button>
-  </div>
+      <h2 style="margin-bottom: 1em; color: white;">✨ FILL THY FORM ✨</h2>
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder='i.e. Robert Aaron "cute" Mantac' required>
+      </div>
+
+      <div class="form-group">
+        <label for="facebook">Facebook Name</label>
+        <input type="text" id="facebook" placeholder="i.e. Robert Aaron Mantac" required>
+      </div>
+
+      <div class="form-group">
+        <label for="contact">Contact Number</label>
+        <input type="text" id="contact" placeholder="i.e. 09XXXXXXXXX" required>
+      </div>
+
+      <div class="form-group">
+        <label for="relationship">What's your relationship with Cassy?</label>
+        <textarea id="relationship" placeholder="i.e. Classmate, Best Friend, Cousin" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="tinapay">Ga damgo kaw man it tinapay?</label>
+        <textarea id="tinapay" placeholder="If yes, describe" required></textarea>
+      </div>
+
+      <button onclick="submitForm()">Submit</button>
+    </div>
+
 
   <!-- Ticket Popup -->
   <div id="ticket-box" class="hidden">
-    <button id="ticket-close" onclick="closeTicket()">✖</button>
-    <canvas id="ticket" width="500" height="300"></canvas>
-    <p style="color: white; margin-top: 30px;">
-      If you can’t download the picture, copy the link above and paste it in your browser.
-    </p>
-    <a id="download-link" download>🎫 Download Your Ticket</a>
-  </div>
+      <button id="ticket-close" onclick="closeTicket()">✖</button>
+      <div id="ticket-content">
+        <canvas id="ticket" width="600" height="250"></canvas>
+        <p style="color: white; margin-top: 30px; margin-bottom: 40px;">
+          If you can’t download the picture, copy the link above and paste it in your browser.
+        </p>
+        <a id="download-link" download>🎫 Download Your Ticket</a>
+      </div>
+    </div>
+
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -243,31 +332,98 @@
       };
 
       await db.ref("submissions").push(payload);
-      generateTicket(name, code);
+      document.fonts.ready.then(() => {
+        generateTicket(name, code);
+      });
     }
 
     function generateTicket(name, code) {
       const canvas = document.getElementById('ticket');
       const ctx = canvas.getContext('2d');
       const ticketBox = document.getElementById('ticket-box');
+      const ticketContent = document.getElementById('ticket-content');
       const downloadLink = document.getElementById('download-link');
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#fff3e0';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Set canvas size
+      canvas.width = 600;
+      canvas.height = 250;
 
-      ctx.fillStyle = '#d81b60';
-      ctx.font = '22px Georgia';
-      ctx.fillText("🎟️ Cassy's Debut Entrance Ticket 🎟️", 50, 60);
+      // Load your background ticket image
+      const ticketBg = new Image();
+      ticketBg.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#000';
-      ctx.font = '18px sans-serif';
-      ctx.fillText(`Name: ${name}`, 50, 130);
-      ctx.fillText(`Your Code: ${code}`, 50, 170);
+        // Draw background image first
+        ctx.drawImage(ticketBg, 0, 0, canvas.width, canvas.height);
 
-      ticketBox.classList.remove('hidden');
-      downloadLink.href = canvas.toDataURL();
-      downloadLink.download = `Cassy_Ticket_${name}.png`;
+        // QR Code
+        const qr = new QRious({
+          value: code,
+          size: 80
+        });
+
+        const qrImage = new Image();
+        qrImage.onload = () => {
+          const qrX = 470;
+          const qrY = 100;
+          const qrSize = 100;
+          const radius = 12;
+
+          // Draw the white rounded background
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath();
+          ctx.moveTo(qrX + radius, qrY);
+          ctx.lineTo(qrX + qrSize - radius, qrY);
+          ctx.quadraticCurveTo(qrX + qrSize, qrY, qrX + qrSize, qrY + radius);
+          ctx.lineTo(qrX + qrSize, qrY + qrSize - radius);
+          ctx.quadraticCurveTo(qrX + qrSize, qrY + qrSize, qrX + qrSize - radius, qrY + qrSize);
+          ctx.lineTo(qrX + radius, qrY + qrSize);
+          ctx.quadraticCurveTo(qrX, qrY + qrSize, qrX, qrY + qrSize - radius);
+          ctx.lineTo(qrX, qrY + radius);
+          ctx.quadraticCurveTo(qrX, qrY, qrX + radius, qrY);
+          ctx.closePath();
+          ctx.fill();
+
+          // Clip and draw QR code
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(qrX + radius, qrY);
+          ctx.lineTo(qrX + qrSize - radius, qrY);
+          ctx.quadraticCurveTo(qrX + qrSize, qrY, qrX + qrSize, qrY + radius);
+          ctx.lineTo(qrX + qrSize, qrY + qrSize - radius);
+          ctx.quadraticCurveTo(qrX + qrSize, qrY + qrSize, qrX + qrSize - radius, qrY + qrSize);
+          ctx.lineTo(qrX + radius, qrY + qrSize);
+          ctx.quadraticCurveTo(qrX, qrY + qrSize, qrX, qrY + qrSize - radius);
+          ctx.lineTo(qrX, qrY + radius);
+          ctx.quadraticCurveTo(qrX, qrY, qrX + radius, qrY);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+          ctx.restore();
+
+          // ✅ Draw text below QR after it's positioned
+          ctx.fillStyle = '#fff';
+          ctx.font = '16px Poppins';
+          let firstName = name.trim().split(" ")[0];
+          const nameWidth = ctx.measureText(firstName).width;
+          ctx.fillText(firstName, qrX + (qrSize - nameWidth) / 2, qrY + qrSize - 160);
+
+          ctx.font = '14px Poppins';
+          const codeWidth = ctx.measureText(code).width;
+          ctx.fillText(code, qrX + (qrSize - codeWidth) / 2, qrY + qrSize + 20);
+
+          // Show ticket
+          ticketBox.classList.remove('hidden');
+          ticketContent.classList.remove('show');
+          setTimeout(() => ticketContent.classList.add('show'), 10);
+          downloadLink.href = canvas.toDataURL();
+          downloadLink.download = `Cassy_Ticket_${firstName}.png`;
+        };
+
+        qrImage.src = qr.toDataURL();
+      };
+
+      ticketBg.src = 'images/ticket.png';
     }
 
     function closeTicket() {
